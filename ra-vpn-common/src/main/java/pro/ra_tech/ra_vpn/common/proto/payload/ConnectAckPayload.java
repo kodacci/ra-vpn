@@ -11,6 +11,10 @@ public record ConnectAckPayload (
         InetAddress dstAddress
 ) implements VpnPacketPayload {
     public static ConnectAckPayload fromBytes(byte[] bytes, int offset) {
+        if (bytes.length < 8 + offset) {
+            throw new IllegalArgumentException("CONNECT_ACK: Insufficient packet length " + bytes.length);
+        }
+
         try {
             return new ConnectAckPayload(
                     BinHelper.toInetAddress(bytes, offset),

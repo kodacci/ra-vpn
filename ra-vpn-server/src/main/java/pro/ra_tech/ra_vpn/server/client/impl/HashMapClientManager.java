@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
@@ -65,7 +66,7 @@ public class HashMapClientManager implements ClientManager {
 
     @Override
     public synchronized Collection<Client> getClients() {
-        return virtualMap.values();
+        return new ArrayList<>(virtualMap.values());
     }
 
     @Override
@@ -80,6 +81,8 @@ public class HashMapClientManager implements ClientManager {
     public synchronized void forget(Client client) {
         if (virtualMap.remove(client.virtualIp()) != null) {
             reusableAddrs.addLast(client.virtualIp());
+            realMap.remove(client.realAddress());
+            log.info("Forgot client {}, clients: {}", client, virtualMap);
         }
     }
 }

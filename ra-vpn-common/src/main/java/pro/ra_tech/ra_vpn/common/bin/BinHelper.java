@@ -33,7 +33,7 @@ public interface BinHelper {
 
     static String toClientId(byte[] bytes, int offset) {
         int idLength = MAX_CLIENT_ID_LENGTH;
-        for (int i = offset; i < MAX_CLIENT_ID_LENGTH; ++i) {
+        for (int i = offset; i < offset + MAX_CLIENT_ID_LENGTH && i < bytes.length; ++i) {
             if (bytes[i] == 0) {
                 idLength = i - offset;
                 break;

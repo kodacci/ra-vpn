@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 @Slf4j
 public class TcpClient extends BaseClient implements ChannelFutureListener {
-    private Channel channel;
+    private volatile Channel channel;
     private Bootstrap boot;
 
     public TcpClient(

@@ -59,7 +59,7 @@ public abstract class BaseEncryptor implements PacketEncryptor {
     protected VpnPacket parseRawHeadless(byte[] raw, int size) {
         val type = VpnPacketType.of(raw[0]);
 
-        return parsePayload(type, raw, 1, size);
+        return parsePayload(type, raw, 1, size - 1);
     }
 
     @Override

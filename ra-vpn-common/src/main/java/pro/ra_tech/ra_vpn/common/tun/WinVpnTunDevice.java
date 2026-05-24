@@ -4,7 +4,7 @@ import info.skyblond.jna.wintun.WintunAdapter;
 import info.skyblond.jna.wintun.WintunSession;
 import lombok.Getter;
 import lombok.val;
-import pro.ra_tech.ra_vpn.common.exceptions.WintunReadException;
+import pro.ra_tech.ra_vpn.common.exceptions.WintunIOException;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -67,7 +67,7 @@ public class WinVpnTunDevice implements VpnTunDevice {
 
             return packet != null ? packet : noPacket;
         } catch (Exception ex) {
-            throw new WintunReadException("Error reading packet from wintun " + getName(), ex);
+            throw new WintunIOException("Error reading packet from wintun " + getName(), ex);
         }
     }
 
@@ -80,7 +80,7 @@ public class WinVpnTunDevice implements VpnTunDevice {
         try {
             session.writePacket(packet.array(), packet.arrayOffset(), packet.limit());
         } catch (Exception ex) {
-            throw new WintunReadException("Error writing packet to wintun " + getName(), ex);
+            throw new WintunIOException("Error writing packet to wintun " + getName(), ex);
         }
     }
 

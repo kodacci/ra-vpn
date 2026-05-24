@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import pro.ra_tech.ra_vpn.common.proto.ConnectAckPacket;
 import pro.ra_tech.ra_vpn.common.proto.ConnectPacket;
+import pro.ra_tech.ra_vpn.common.proto.DisconnectPacket;
 import pro.ra_tech.ra_vpn.common.proto.KeepAliveAckPacket;
 import pro.ra_tech.ra_vpn.common.proto.VpnPacket;
 import pro.ra_tech.ra_vpn.common.proto.payload.ConnectAckPayload;
@@ -76,6 +77,18 @@ public class VpnPacketHandler {
         }
     }
 
+    private void onDisconnect(DisconnectPacket packet) {
+        val client = serverContext.clientManager().getClient(packet.getPayload().srcAddress());
+        if (client != null) {
+            log.info("Disconnecting client {}", client);
+            serverContext.clientManager().forget(client);
+
+            return;
+        }
+
+        log.warn("Disconnect packet received from unknown client {}", packet.getPayload().srcAddress());
+    }
+
     public void handle(
             VpnPacket packet,
             InetSocketAddress sender,
@@ -95,6 +108,7 @@ public class VpnPacketHandler {
                 return;
             case DISCONNECT:
                 log.info("Client {}:{} disconnected", clientHost, clientPort);
+                onDisconnect((DisconnectPacket) packet);
                 return;
             case DATA_TRANSFER:
                 onDataTransfer(packet, internalPacketHandler);
