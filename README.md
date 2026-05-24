@@ -24,7 +24,18 @@ For using TCP, use `-t` option
     java -jar target/ra-vpn-server.jar -p 9867 -e AES -k ./key.txt -t
 ```
 
-##### Linux service automation with systemd
+#### Command line options
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-h, --host` | Host address to listen on | 0.0.0.0 |
+| `-p, --port` | Port to listen on | Required |
+| `-n, --tun-number` | TUN device number (e.g. 21 becomes utun21) | 21 |
+| `-c, --network-cidr` | VPN network CIDR (server virtual IP and subnet) | 10.10.0.1/24 |
+| `-e, --encryptor` | Encryption type (DUMMY, XOR, AES) | DUMMY |
+| `-k, --key-file` | Path to cipher key file (required for AES) | - |
+| `-t, --tcp` | Use TCP transport instead of UDP | false |
+
+#### Linux service automation with systemd
 Generate AES encryption key with `java -jar target/ra-vpn-keygen.jar`.
 Then copy ra-vpn-server jar file and key to `/opt/ra-vpn`
 Create file ra-vpn-server.service in `/etc/systemd/system`
