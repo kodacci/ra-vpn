@@ -58,6 +58,7 @@ public class TcpServer extends BaseServer {
 
             return client.channel();
         } catch (Exception _) {
+            log.warn("Failed to find channel for {}", header.dstAddress());
             return null;
         }
     }

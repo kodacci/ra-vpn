@@ -8,7 +8,7 @@ public class IpHeaderParser {
     }
 
     public IpHeader parse(byte[] raw, int offset) {
-        if (raw.length - offset < 23) {
+        if (raw.length - offset < 20) {
             throw new IllegalArgumentException("Ip packet array too small - invalid or damaged ip packet");
         }
 

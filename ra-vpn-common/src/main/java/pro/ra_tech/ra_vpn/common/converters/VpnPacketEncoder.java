@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import pro.ra_tech.ra_vpn.common.crypto.PacketEncryptor;
 import pro.ra_tech.ra_vpn.common.proto.VpnPacket;
 
@@ -15,6 +16,8 @@ public class VpnPacketEncoder extends MessageToByteEncoder<VpnPacket> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, VpnPacket packet, ByteBuf byteBuf) {
-        byteBuf.writeBytes(encryptor.encrypt(packet));
+        val buff = encryptor.encrypt(packet);
+        byteBuf.writeBytes(buff);
+        buff.release();
     }
 }

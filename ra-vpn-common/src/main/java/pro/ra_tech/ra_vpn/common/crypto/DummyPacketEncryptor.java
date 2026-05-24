@@ -16,9 +16,9 @@ public class DummyPacketEncryptor extends BaseEncryptor implements PacketEncrypt
         dst[SIGNATURE.length] = packet.getType().getCode();
 
         val bytes = packet.getPayload().toBytes();
-        System.arraycopy(bytes, 0, dst, SIGNATURE.length, bytes.length);
+        System.arraycopy(bytes, 0, dst, SIGNATURE.length + 1, bytes.length);
 
-        return Unpooled.wrappedBuffer(dst, 0, SIGNATURE.length + bytes.length);
+        return Unpooled.wrappedBuffer(dst, 0, SIGNATURE.length + bytes.length + 1);
     }
 
     @Override

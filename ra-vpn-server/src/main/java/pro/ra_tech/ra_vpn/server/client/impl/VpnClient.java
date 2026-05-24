@@ -27,7 +27,7 @@ public class VpnClient implements Client {
     @Accessors(fluent = true)
     private final Channel channel;
 
-    private Instant lastSeen = Instant.now();
+    private volatile Instant lastSeen = Instant.now();
 
     @Override
     public void lastSeen(Instant lastSeen) {
