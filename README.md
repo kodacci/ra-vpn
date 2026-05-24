@@ -51,6 +51,52 @@ Then execute
 ### ra-vpn-client
 VPN client
 
+#### Running client
+UDP is default protocol
+```bash
+    java -jar target/ra-vpn-client.jar -h <server-host> -p <server-port> -e AES -k ./key.txt
+```
+For using TCP, use `-t` option
+```bash
+    java -jar target/ra-vpn-client.jar -h <server-host> -p <server-port> -e AES -k ./key.txt -t
+```
+
+#### Command line options
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-h, --host` | Server host to connect to | Required |
+| `-p, --port` | Server port to connect to | Required |
+| `-n, --tun-number` | TUN device number | 21 |
+| `-e, --encryptor` | Encryption type (DUMMY, XOR, AES) | DUMMY |
+| `-k, --key-file` | Path to cipher key file (required for AES) | - |
+| `-i, --virtual-ip` | Virtual IP address | 10.10.0.10 |
+| `-d, --client-id` | Client identifier | test-client |
+| `-t, --tcp` | Use TCP transport instead of UDP | false |
+| `-l, --log-level` | Log level (TRACE, DEBUG, INFO, WARN, ERROR) | INFO |
+
+#### Linux service automation with systemd
+Copy ra-vpn-client jar file and key to `/opt/ra-vpn`
+Create file ra-vpn-client.service in `/etc/systemd/system`
+```ini
+[Unit]
+Description=RA-ITech VPN Client
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/java -jar /opt/ra-vpn/ra-vpn-client.jar -h <server-host> -p 9867 -e AES -k /opt/ra-vpn/key.txt
+Restart=always
+Type=exec
+
+[Install]
+WantedBy=default.target
+```
+Then execute
+```bash
+    sudo systemctl daemon-reload
+    sudo systemctl enable ra-vpn-client.service
+    sudo systemctl start ra-vpn-client.service
+```
+
 ### ra-vpn-common
 Common classes for server and client
 
