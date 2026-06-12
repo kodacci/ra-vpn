@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 import pro.ra_tech.ra_vpn.common.proto.ConnectPacket;
 
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -24,6 +25,16 @@ public class Connector implements Runnable {
     @Getter
     @Setter
     private volatile ConnectionState state = ConnectionState.DISCONNECTED;
+    @Getter
+    private volatile Instant lastAlive = Instant.now();
+
+    /**
+     * Records that a keep-alive (or connect ack) was just received from the server,
+     * resetting the disconnection-detection timer.
+     */
+    public void markAlive() {
+        lastAlive = Instant.now();
+    }
 
     @Override
     public void run() {

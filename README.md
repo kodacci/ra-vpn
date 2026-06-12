@@ -5,6 +5,14 @@ A simple VPN protocol implementation in JAVA
 - UDP and TCP protocols support
 - AES encryption
 
+## Architecture
+![RA-ITECH VPN architecture](docs/architecture.svg)
+
+A TUN-based Layer-3 tunnel bridges a dedicated TUN reader thread with a Netty channel pipeline
+in both directions. The client wraps raw IP packets as `DATA_TRANSFER` VPN packets and the server
+routes them between clients or onto its own TUN device, while keep-alives drive connection
+liveness and reconnection. See [CLAUDE.md](CLAUDE.md) for a full breakdown.
+
 ## Build
 ```bash
   mvn clean package

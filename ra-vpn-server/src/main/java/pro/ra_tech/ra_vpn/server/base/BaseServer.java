@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public abstract class BaseServer implements Server {
     private static final int MAX_THREADS = 4;
-    private static final int CLIENT_CHECK_INTERVAL_SEC = 10;
+    private static final int CLIENT_CHECK_INTERVAL_SEC = 5;
 
     private final String host;
     private final int port;
