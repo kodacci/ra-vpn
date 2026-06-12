@@ -7,7 +7,7 @@ import pro.ra_tech.ra_vpn.common.proto.VpnPacket;
 
 import static pro.ra_tech.ra_vpn.common.Constants.SIGNATURE;
 
-public class DummyPacketEncryptor extends BaseEncryptor implements PacketEncryptor {
+public class DummyPacketEncryptor extends BaseEncryptor {
     @Override
     public ByteBuf encrypt(VpnPacket packet) {
         val dst = getBuffer();

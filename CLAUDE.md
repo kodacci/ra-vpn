@@ -51,8 +51,6 @@ centralized via the `${revision}` property in the root pom.
 
 ## Architecture
 
-![RA-ITECH VPN architecture](docs/architecture.svg)
-
 ### Packet flow
 The core data path in both server and client is a **TUN reader thread** plus a **Netty channel
 pipeline**, bridged in opposite directions:
