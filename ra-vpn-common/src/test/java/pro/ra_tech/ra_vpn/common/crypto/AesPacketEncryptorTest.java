@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pro.ra_tech.ra_vpn.common.bin.BinHelper;
 import pro.ra_tech.ra_vpn.common.proto.ConnectPacket;
 import pro.ra_tech.ra_vpn.common.proto.DataTransferPacket;
 import pro.ra_tech.ra_vpn.common.proto.KeepAliveAckPacket;

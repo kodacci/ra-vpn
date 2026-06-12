@@ -7,8 +7,6 @@ import pro.ra_tech.ra_vpn.common.proto.ConnectPacket;
 
 import java.net.InetAddress;
 
-import static pro.ra_tech.ra_vpn.common.Constants.SIGNATURE;
-
 class XorEncryptorTest {
     @Test
     void connectPacketTest() {
