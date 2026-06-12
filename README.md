@@ -42,6 +42,7 @@ For using TCP, use `-t` option
 | `-e, --encryptor` | Encryption type (DUMMY, XOR, AES) | DUMMY |
 | `-k, --key-file` | Path to cipher key file (required for AES) | - |
 | `-t, --tcp` | Use TCP transport instead of UDP | false |
+| `-l, --log-level` | Log level (TRACE, DEBUG, INFO, WARN, ERROR) | INFO |
 
 #### Linux service automation with systemd
 Generate AES encryption key with `java -jar target/ra-vpn-keygen.jar`.
