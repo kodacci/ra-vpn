@@ -25,8 +25,6 @@ public class UdpInChannelHandler extends SimpleChannelInboundHandler<DatagramPac
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) {
-        log.info("Received packet from {}", msg.sender());
-
         try {
             val packet = encryptor.decrypt(msg);
             handler.handle(
