@@ -32,11 +32,13 @@ public class UnixVpnTunDevice implements VpnTunDevice {
             return;
         }
 
-        if (tun != null) {
-            tun.close();
+        // The interface is reused across reconnections; reopening the same tun
+        // number while the previous fd is still being torn down causes EBUSY.
+        // Keep the device open and just reconfigure the interface address.
+        if (tun == null) {
+            tun = TunDevice.open(tunNumber);
         }
 
-        tun = TunDevice.open(tunNumber);
         try {
             val cidr = virtualIp.getHostAddress() + "/24";
             log.info("Setting cidr {} to tun device {}", cidr, tun.getName());
