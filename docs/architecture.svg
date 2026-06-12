@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="670" viewBox="0 0 1000 670" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <linearGradient id="hdr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22436b"/>
+      <stop offset="1" stop-color="#2d5a8c"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#566273"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="670" fill="#ffffff"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1000" height="62" fill="url(#hdr)"/>
+  <text x="28" y="30" fill="#ffffff" font-size="21" font-weight="700">RA-ITECH VPN — Architecture</text>
+  <text x="28" y="50" fill="#cfe0f0" font-size="12.5">From-scratch Layer-3 TUN tunnel over UDP/TCP · Netty pipeline · pluggable encryption (DUMMY / XOR / AES-GCM)</text>
+
+  <!-- ===================== CLIENT PANEL ===================== -->
+  <rect x="28" y="86" width="300" height="556" rx="10" fill="#eef4fb" stroke="#2d5a8c" stroke-width="1.5"/>
+  <text x="178" y="112" text-anchor="middle" fill="#22436b" font-size="15" font-weight="700">ra-vpn-client</text>
+
+  <!-- Apps / OS -->
+  <rect x="48" y="126" width="260" height="46" rx="7" fill="#ffffff" stroke="#2d5a8c" filter="url(#shadow)"/>
+  <text x="178" y="146" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">OS / Applications</text>
+  <text x="178" y="162" text-anchor="middle" fill="#566273" font-size="10.5">routed through the TUN interface</text>
+
+  <!-- TUN device -->
+  <rect x="48" y="196" width="260" height="50" rx="7" fill="#ffffff" stroke="#2d5a8c" filter="url(#shadow)"/>
+  <text x="178" y="216" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">TUN device</text>
+  <text x="178" y="232" text-anchor="middle" fill="#566273" font-size="10.5">Unix / Win VpnTunDevice (root)</text>
+
+  <!-- ClientTunReader -->
+  <rect x="48" y="272" width="260" height="52" rx="7" fill="#fff7ec" stroke="#c98a1c" filter="url(#shadow)"/>
+  <text x="178" y="292" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">ClientTunReader · thread</text>
+  <text x="178" y="309" text-anchor="middle" fill="#566273" font-size="10.5">raw IP → DATA_TRANSFER packet</text>
+
+  <!-- Netty enc pipeline -->
+  <rect x="48" y="350" width="260" height="52" rx="7" fill="#ffffff" stroke="#2d5a8c" filter="url(#shadow)"/>
+  <text x="178" y="370" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">Netty pipeline</text>
+  <text x="178" y="387" text-anchor="middle" fill="#566273" font-size="10.5">Encoder → PacketEncryptor</text>
+
+  <!-- Connector / Watchdog -->
+  <rect x="48" y="428" width="260" height="52" rx="7" fill="#f0eefb" stroke="#5a43a0" filter="url(#shadow)"/>
+  <text x="178" y="448" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">Connector + ConnectionWatchdog</text>
+  <text x="178" y="465" text-anchor="middle" fill="#566273" font-size="10.5">connect / reconnect state machine</text>
+
+  <!-- Socket -->
+  <rect x="48" y="506" width="260" height="46" rx="7" fill="#dceaf8" stroke="#2d5a8c" filter="url(#shadow)"/>
+  <text x="178" y="526" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">Socket — UDP (default) / TCP</text>
+  <text x="178" y="542" text-anchor="middle" fill="#566273" font-size="10.5">NioDatagram / NioSocket channel</text>
+
+  <!-- client internal arrows (bidirectional data path) -->
+  <line x1="178" y1="172" x2="178" y2="196" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="178" y1="246" x2="178" y2="272" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="178" y1="324" x2="178" y2="350" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="178" y1="402" x2="178" y2="506" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+  <!-- ===================== MIDDLE / WIRE ===================== -->
+  <text x="500" y="112" text-anchor="middle" fill="#444" font-size="15" font-weight="700">Wire protocol</text>
+
+  <!-- network double arrow -->
+  <line x1="328" y1="529" x2="672" y2="142" stroke="#2d5a8c" stroke-width="2.4" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <rect x="372" y="300" width="256" height="34" rx="6" fill="#ffffff" stroke="#2d5a8c"/>
+  <text x="500" y="322" text-anchor="middle" fill="#22436b" font-size="12" font-weight="600">encrypted, framed VPN packets</text>
+
+  <!-- wire format box -->
+  <rect x="360" y="150" width="280" height="92" rx="8" fill="#f5f5f7" stroke="#888" filter="url(#shadow)"/>
+  <text x="500" y="172" text-anchor="middle" fill="#1d2b3a" font-size="12" font-weight="600">On-wire frame</text>
+  <text x="500" y="192" text-anchor="middle" fill="#566273" font-size="10.5" font-family="monospace">"RA-V" sig · type · payload</text>
+  <text x="500" y="210" text-anchor="middle" fill="#566273" font-size="10.5" font-family="monospace">AES: sig · type · 12B IV · ct</text>
+  <text x="500" y="228" text-anchor="middle" fill="#566273" font-size="10.5">UDP = full frame · TCP = headless</text>
+
+  <!-- packet types box -->
+  <rect x="360" y="372" width="280" height="118" rx="8" fill="#f5f5f7" stroke="#888" filter="url(#shadow)"/>
+  <text x="500" y="394" text-anchor="middle" fill="#1d2b3a" font-size="12" font-weight="600">Packet types</text>
+  <text x="500" y="414" text-anchor="middle" fill="#566273" font-size="10.5">CONNECT · CONNECT_ACK</text>
+  <text x="500" y="432" text-anchor="middle" fill="#566273" font-size="10.5">KEEP_ALIVE · KEEP_ALIVE_ACK</text>
+  <text x="500" y="450" text-anchor="middle" fill="#566273" font-size="10.5">DISCONNECT · DATA_TRANSFER</text>
+  <text x="500" y="476" text-anchor="middle" fill="#566273" font-size="10.5">keep-alive: server 5s · client timeout 15s</text>
+
+  <!-- ===================== SERVER PANEL ===================== -->
+  <rect x="672" y="86" width="300" height="556" rx="10" fill="#eef7f0" stroke="#2e7d4f" stroke-width="1.5"/>
+  <text x="822" y="112" text-anchor="middle" fill="#1f5c39" font-size="15" font-weight="700">ra-vpn-server</text>
+
+  <!-- Socket -->
+  <rect x="692" y="126" width="260" height="46" rx="7" fill="#dcefe2" stroke="#2e7d4f" filter="url(#shadow)"/>
+  <text x="822" y="146" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">Socket — UDP (default) / TCP</text>
+  <text x="822" y="162" text-anchor="middle" fill="#566273" font-size="10.5">listens on configured port</text>
+
+  <!-- Netty dec pipeline -->
+  <rect x="692" y="196" width="260" height="50" rx="7" fill="#ffffff" stroke="#2e7d4f" filter="url(#shadow)"/>
+  <text x="822" y="216" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">Netty pipeline</text>
+  <text x="822" y="232" text-anchor="middle" fill="#566273" font-size="10.5">Decoder → PacketEncryptor</text>
+
+  <!-- VpnPacketHandler -->
+  <rect x="692" y="272" width="260" height="50" rx="7" fill="#ffffff" stroke="#2e7d4f" filter="url(#shadow)"/>
+  <text x="822" y="292" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">VpnPacketHandler</text>
+  <text x="822" y="308" text-anchor="middle" fill="#566273" font-size="10.5">dispatch by packet type</text>
+
+  <!-- ClientManager -->
+  <rect x="692" y="346" width="260" height="52" rx="7" fill="#f0eefb" stroke="#5a43a0" filter="url(#shadow)"/>
+  <text x="822" y="366" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">ClientManager</text>
+  <text x="822" y="383" text-anchor="middle" fill="#566273" font-size="10.5">virtual-IP assign · client↔client routing</text>
+
+  <!-- ClientChecker -->
+  <rect x="692" y="424" width="260" height="46" rx="7" fill="#fff7ec" stroke="#c98a1c" filter="url(#shadow)"/>
+  <text x="822" y="444" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">ClientChecker · every 5s</text>
+  <text x="822" y="460" text-anchor="middle" fill="#566273" font-size="10.5">keep-alives · expire stale clients</text>
+
+  <!-- TunReaderHandler + TUN -->
+  <rect x="692" y="496" width="260" height="56" rx="7" fill="#ffffff" stroke="#2e7d4f" filter="url(#shadow)"/>
+  <text x="822" y="517" text-anchor="middle" fill="#1d2b3a" font-size="12.5" font-weight="600">TunReaderHandler · thread → TUN</text>
+  <text x="822" y="534" text-anchor="middle" fill="#566273" font-size="10.5">UnixVpnTunDevice (root)</text>
+
+  <!-- server internal arrows -->
+  <line x1="822" y1="172" x2="822" y2="196" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="822" y1="246" x2="822" y2="272" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="822" y1="322" x2="822" y2="346" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="822" y1="398" x2="822" y2="496" stroke="#566273" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+
+  <!-- footer -->
+  <text x="500" y="662" text-anchor="middle" fill="#8a93a0" font-size="10.5">ra-vpn-common provides shared proto / crypto / TUN / IP code · ra-vpn-keygen generates AES keys</text>
+</svg>

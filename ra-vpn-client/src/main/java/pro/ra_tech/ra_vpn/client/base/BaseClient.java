@@ -20,7 +20,10 @@ import pro.ra_tech.ra_vpn.common.tun.WinVpnTunDevice;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -30,6 +33,12 @@ import static lombok.AccessLevel.PROTECTED;
 @RequiredArgsConstructor(access = PROTECTED)
 public abstract class BaseClient implements Client {
     protected static final int CONNECTION_INTERVAL_SEC = 3;
+    /**
+     * If no keep-alive arrives from the server within this window while connected, the
+     * connection is treated as lost and a reconnect is triggered. The server sends keep-alives
+     * every 5s, so this allows a few missed ones before reacting.
+     */
+    protected static final Duration KEEP_ALIVE_TIMEOUT = Duration.ofSeconds(15);
 
     private final InetSocketAddress server;
     private final int tunNumber;
@@ -76,6 +85,14 @@ public abstract class BaseClient implements Client {
     protected abstract Supplier<Channel> getChannelSupplier();
     protected abstract Reconnector getReconnector();
 
+    /**
+     * Hook for scheduling transport-specific connection-loss detection. No-op by default; only
+     * the connectionless UDP transport schedules a {@link ConnectionWatchdog} here, since TCP
+     * detects a dropped connection through the socket itself.
+     */
+    protected void scheduleWatchdog(ScheduledExecutorService executor, Connector connector) {
+    }
+
     @Override
     public void start() {
         val masterGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
@@ -91,7 +108,8 @@ public abstract class BaseClient implements Client {
             );
             bootstrap(masterGroup, ctx);
             connector.setChannelSupplier(getChannelSupplier());
-            connectExecutor.scheduleAtFixedRate(connector, 0, CONNECTION_INTERVAL_SEC, java.util.concurrent.TimeUnit.SECONDS);
+            connectExecutor.scheduleAtFixedRate(connector, 0, CONNECTION_INTERVAL_SEC, TimeUnit.SECONDS);
+            scheduleWatchdog(connectExecutor, connector);
 
             log.info("{} client started on {}", getType(), getChannelSupplier().get().localAddress());
 

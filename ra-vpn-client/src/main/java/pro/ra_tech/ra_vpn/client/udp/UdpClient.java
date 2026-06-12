@@ -10,9 +10,13 @@ import org.jspecify.annotations.Nullable;
 import pro.ra_tech.ra_vpn.client.base.BaseClient;
 import pro.ra_tech.ra_vpn.client.base.ClientContext;
 import pro.ra_tech.ra_vpn.client.base.Reconnector;
+import pro.ra_tech.ra_vpn.client.event.ConnectionWatchdog;
+import pro.ra_tech.ra_vpn.client.event.Connector;
 import pro.ra_tech.ra_vpn.common.crypto.EncryptorType;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -53,5 +57,13 @@ public class UdpClient extends BaseClient {
     @Override
     protected Reconnector getReconnector() {
         return () -> {};
+    }
+
+    @Override
+    protected void scheduleWatchdog(ScheduledExecutorService executor, Connector connector) {
+        executor.scheduleAtFixedRate(
+                new ConnectionWatchdog(connector, KEEP_ALIVE_TIMEOUT),
+                CONNECTION_INTERVAL_SEC, CONNECTION_INTERVAL_SEC, TimeUnit.SECONDS
+        );
     }
 }

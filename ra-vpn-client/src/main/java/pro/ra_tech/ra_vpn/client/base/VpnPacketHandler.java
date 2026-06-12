@@ -22,6 +22,7 @@ public class VpnPacketHandler {
 
         try {
             clientContext.tun().setVirtualIp(packet.getPayload().dstAddress(), packet.getPayload().srcAddress());
+            clientContext.connector().markAlive();
             clientContext.connector().setState(ConnectionState.CONNECTED);
 
             log.info("Successfully connected to server with virtual IP set to {}", packet.getPayload().dstAddress());
@@ -32,6 +33,7 @@ public class VpnPacketHandler {
 
     private void onKeepAlive(VpnPacket packet, Consumer<VpnPacket> consumer) {
         log.debug("Got KEEP_ALIVE from server: {}", packet.getPayload());
+        clientContext.connector().markAlive();
         val virtualIp = clientContext.tun().getVirtualIp();
         if (virtualIp == null) {
             log.warn("Keep alive when tun not configured, skipping");
