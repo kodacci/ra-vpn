@@ -42,6 +42,8 @@ public abstract class BaseTunReader implements TunReader {
                 return;
             }
 
+            log.debug("Sending packet with header {}", header);
+
             sendPacket(channel, new DataTransferPacket(
                     rawPacket,
                     header.srcAddress().toInetAddress(),
