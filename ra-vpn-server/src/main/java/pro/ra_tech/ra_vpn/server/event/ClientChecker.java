@@ -36,7 +36,7 @@ public class ClientChecker implements Runnable {
                 return;
             }
 
-            log.info("Sending keep alive packet to {}", client);
+            log.debug("Sending keep alive packet to {}", client);
             client.channel().pipeline().fireUserEventTriggered(
                     new SendKeepAliveEvent(
                             new KeepAlivePacket(

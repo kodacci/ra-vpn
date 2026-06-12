@@ -61,7 +61,7 @@ public class VpnPacketHandler {
             InetSocketAddress sender,
             Consumer<VpnPacket> responseHandler
     ) {
-        log.info("Received packet {} from {}", packet.getType(), sender);
+        log.debug("Received packet {} from {}", packet.getType(), sender);
 
         try {
             switch (packet.getType()) {
