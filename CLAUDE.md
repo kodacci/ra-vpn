@@ -44,7 +44,8 @@ sudo java -jar ra-vpn-client/target/ra-vpn-client.jar -h <server-host> -p 9867 -
 - **ra-vpn-server** — server entry point (`server.Application`), client registry, packet routing.
 - **ra-vpn-client** — client entry point (`client.Application`), connection/reconnection state machine.
 - **ra-vpn-keygen** — standalone AES key generator (`keygen.Application`).
-- **ra-vpn-proxy** — currently an empty stub (no sources yet), depends only on common.
+- **ra-vpn-proxy** — UDP mediator (`proxy.Application`) that relays packets between clients and the
+  real VPN server, tracking clients by the inner src/dst IPs in the VPN payload. Depends on common.
 
 All packages live under `pro.ra_tech.ra_vpn.*`. The Maven groupId is `pro.ra-tech`; version is
 centralized via the `${revision}` property in the root pom.
