@@ -42,6 +42,7 @@ public class VpnPacketHandler {
 
         responseConsumer.accept(new ConnectAckPacket(
                 new ConnectAckPayload(
+                        id,
                         serverContext.serverVirtualIp(),
                         client.virtualIp()
                 )

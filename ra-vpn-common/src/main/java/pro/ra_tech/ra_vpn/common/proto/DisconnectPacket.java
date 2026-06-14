@@ -14,8 +14,8 @@ public class DisconnectPacket implements VpnPacket {
         return new DisconnectPacket(ConnectPayload.fromBytes(data, offset));
     }
 
-    public DisconnectPacket(String clientId, InetAddress serverAddress, InetAddress clientVirtualIp) {
-        payload = new ConnectPayload(clientId, serverAddress, clientVirtualIp);
+    public DisconnectPacket(String clientId, InetAddress src, InetAddress dst) {
+        payload = new ConnectPayload(clientId, src, dst);
     }
 
     @Override
