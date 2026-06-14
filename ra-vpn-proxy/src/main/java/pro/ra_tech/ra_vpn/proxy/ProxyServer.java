@@ -14,6 +14,8 @@ import pro.ra_tech.ra_vpn.common.crypto.EncryptorFactory;
 import pro.ra_tech.ra_vpn.common.crypto.EncryptorType;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 /**
  * UDP mediator that sits between VPN clients and the real VPN server. A single datagram socket
@@ -23,6 +25,9 @@ import java.net.InetSocketAddress;
 @Slf4j
 @RequiredArgsConstructor
 public class ProxyServer {
+    private static final long CLIENT_CHECK_INTERVAL_SEC = 10;
+    private static final Duration CLIENT_FORGET_TIMEOUT = Duration.ofSeconds(60);
+
     private final String host;
     private final int port;
     private final InetSocketAddress serverAddress;
@@ -55,6 +60,13 @@ public class ProxyServer {
                     host,
                     port,
                     serverAddress
+            );
+
+            group.scheduleAtFixedRate(
+                    () -> clients.forgetExpired(CLIENT_FORGET_TIMEOUT),
+                    CLIENT_CHECK_INTERVAL_SEC,
+                    CLIENT_CHECK_INTERVAL_SEC,
+                    TimeUnit.SECONDS
             );
 
             channel.closeFuture().sync();

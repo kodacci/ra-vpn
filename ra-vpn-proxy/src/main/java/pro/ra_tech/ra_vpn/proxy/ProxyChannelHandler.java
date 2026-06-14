@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import pro.ra_tech.ra_vpn.common.crypto.PacketEncryptor;
 import pro.ra_tech.ra_vpn.common.proto.VpnPacket;
+import pro.ra_tech.ra_vpn.common.proto.VpnPacketType;
 
 import java.net.InetSocketAddress;
 
@@ -64,6 +65,14 @@ public class ProxyChannelHandler extends SimpleChannelInboundHandler<DatagramPac
 
     private void routeToServer(ChannelHandlerContext ctx, VpnPacket packet, InetSocketAddress sender, byte[] raw) {
         val virtualIp = packet.getPayload().srcAddress();
+
+        if (packet.getType() == VpnPacketType.DISCONNECT) {
+            log.debug("Forwarding DISCONNECT from client {} to server", virtualIp.getHostAddress());
+            forward(ctx, raw, serverAddress);
+            clients.forget(virtualIp);
+            return;
+        }
+
         if (clients.track(virtualIp, sender)) {
             log.info("Tracking client {} at {}", virtualIp.getHostAddress(), sender);
         }
