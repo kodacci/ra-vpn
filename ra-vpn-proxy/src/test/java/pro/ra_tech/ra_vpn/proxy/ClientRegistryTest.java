@@ -44,6 +44,37 @@ class ClientRegistryTest {
     }
 
     @Test
+    void bindResolvesPendingConnectToAssignedVirtualIp() {
+        val registry = new ClientRegistry();
+        val assignedIp = InetAddress.ofLiteral("10.0.0.5");
+
+        registry.addPending("client-a", CLIENT);
+        val bound = registry.bind("client-a", assignedIp);
+
+        assertEquals(CLIENT, bound, "bind should return the connecting client's real address");
+        assertEquals(CLIENT, registry.findRealAddress(assignedIp), "assigned IP should now resolve");
+    }
+
+    @Test
+    void bindFallsBackToExistingMappingForReAck() {
+        val registry = new ClientRegistry();
+        val assignedIp = InetAddress.ofLiteral("10.0.0.5");
+
+        registry.addPending("client-a", CLIENT);
+        registry.bind("client-a", assignedIp);
+
+        // A second CONNECT_ACK for the same client (no pending entry left) still resolves.
+        assertEquals(CLIENT, registry.bind("client-a", assignedIp));
+    }
+
+    @Test
+    void bindReturnsNullForUnknownClient() {
+        val registry = new ClientRegistry();
+
+        assertNull(registry.bind("ghost", InetAddress.ofLiteral("10.0.0.9")));
+    }
+
+    @Test
     void returnsNullForUnknownClient() {
         val registry = new ClientRegistry();
 

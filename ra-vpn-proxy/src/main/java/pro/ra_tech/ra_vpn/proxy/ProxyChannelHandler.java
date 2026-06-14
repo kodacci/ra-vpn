@@ -10,6 +10,8 @@ import lombok.val;
 import pro.ra_tech.ra_vpn.common.crypto.PacketEncryptor;
 import pro.ra_tech.ra_vpn.common.proto.VpnPacket;
 import pro.ra_tech.ra_vpn.common.proto.VpnPacketType;
+import pro.ra_tech.ra_vpn.common.proto.payload.ConnectAckPayload;
+import pro.ra_tech.ra_vpn.common.proto.payload.ConnectPayload;
 
 import java.net.InetSocketAddress;
 
@@ -21,6 +23,11 @@ import static pro.ra_tech.ra_vpn.common.Constants.MAX_PACKET_SIZE;
  * Datagrams whose sender is the configured server are routed back to the client identified by the
  * inner IP destination address; everything else is treated as client traffic, the sender is
  * recorded against the inner IP source address, and the packet is forwarded to the server.
+ * <p>
+ * The handshake is special-cased because the server assigns the virtual IP: a CONNECT records the
+ * sender as {@linkplain ClientRegistry#addPending pending} under its clientId, and the matching
+ * CONNECT_ACK {@linkplain ClientRegistry#bind binds} the assigned IP to that client before being
+ * delivered back. See {@link ClientRegistry} for the addressing rationale.
  * <p>
  * The proxy only inspects the inner addresses to make routing decisions: the original (encrypted)
  * bytes are forwarded verbatim so the client/server keep doing end-to-end crypto. Decryption is
@@ -64,6 +71,16 @@ public class ProxyChannelHandler extends SimpleChannelInboundHandler<DatagramPac
     }
 
     private void routeToServer(ChannelHandlerContext ctx, VpnPacket packet, InetSocketAddress sender, byte[] raw) {
+        // The client's virtual IP is assigned by the server, so a CONNECT only tells us who is
+        // connecting (clientId) and from where; the IP is learned later from the CONNECT_ACK.
+        if (packet.getType() == VpnPacketType.CONNECT) {
+            val clientId = ((ConnectPayload) packet.getPayload()).clientId();
+            clients.addPending(clientId, sender);
+            log.info("Pending CONNECT from client {} at {}", clientId, sender);
+            forward(ctx, raw, serverAddress);
+            return;
+        }
+
         val virtualIp = packet.getPayload().srcAddress();
 
         if (packet.getType() == VpnPacketType.DISCONNECT) {
@@ -82,6 +99,22 @@ public class ProxyChannelHandler extends SimpleChannelInboundHandler<DatagramPac
     }
 
     private void routeToClient(ChannelHandlerContext ctx, VpnPacket packet, byte[] raw) {
+        // CONNECT_ACK carries the server-assigned virtual IP plus the clientId of the CONNECT it
+        // answers: bind the IP to that pending client and deliver the ack to its real address.
+        if (packet.getType() == VpnPacketType.CONNECT_ACK) {
+            val ack = (ConnectAckPayload) packet.getPayload();
+            val virtualIp = ack.dstAddress();
+            val client = clients.bind(ack.clientId(), virtualIp);
+            if (client == null) {
+                log.warn("Dropping CONNECT_ACK for unknown client {} ({})", ack.clientId(), virtualIp.getHostAddress());
+                return;
+            }
+
+            log.debug("Forwarding CONNECT_ACK to client {} at {}", virtualIp.getHostAddress(), client);
+            forward(ctx, raw, client);
+            return;
+        }
+
         val virtualIp = packet.getPayload().dstAddress();
         val client = clients.findRealAddress(virtualIp);
         if (client == null) {
